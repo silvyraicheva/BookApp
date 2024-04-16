@@ -1,23 +1,87 @@
-import React from "react";
-import { StyleSheet, View, Text, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+    StyleSheet,
+    View,
+    Text,
+    Image,
+    TextInput,
+    Button,
+    TouchableOpacity,
+    ScrollView,
+} from "react-native";
+import axios from "axios";
+import { Google_Books_URL, GET_BOOKS_name, KEY_HEADER } from "./APIConfig";
 
-const Rocommendation = () => {
+const Recommendation = () => {
+    const [books, setBooks] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    useEffect(() => {
+        fetchBooks();
+    }, []);
+
+    const fetchBooks = async () => {
+        try {
+            let url = `${Google_Books_URL}${GET_BOOKS_name}`;
+            if (searchQuery.trim() !== "") {
+                url += `=${searchQuery}`;
+            }
+            url += KEY_HEADER;
+
+            const response = await axios.get(url);
+            setBooks(response.data.items);
+        } catch (error) {
+            console.error("Error fetching books:", error);
+        }
+    };
+
+    const handleSearch = () => {
+        if (searchQuery.trim() !== "") {
+            fetchBooks();
+        }
+    };
+
     return (
         <View style={styles.container}>
-            <View style={styles.card}>
-                <Image
-                    source={require("../assets/book1.jpg")}
-                    style={styles.image}
+            <View style={styles.searchContainer}>
+                <TextInput
+                    style={styles.input}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    placeholder="Find your next read..."
                 />
-                <View style={styles.details}>
-                    <Text style={styles.title}>The Great Gatsby</Text>
-                    <Text style={styles.description}>
-                        A novel by F. Scott Fitzgerald
-                    </Text>
-                    <Text style={styles.date}>Start Date: 2024-04-15</Text>
-                    <Text style={styles.date}>End Date: 2024-04-30</Text>
-                </View>
+                <TouchableOpacity
+                    style={styles.searchButton}
+                    onPress={handleSearch}
+                >
+                    <Text style={styles.buttonText}>Go</Text>
+                </TouchableOpacity>
             </View>
+            <ScrollView style={styles.scrollView}>
+                {books.map((book, index) => (
+                    <View style={styles.card} key={index}>
+                        <Image
+                            source={{
+                                uri: book.volumeInfo.imageLinks.thumbnail,
+                            }}
+                            style={styles.image}
+                        />
+                        <View style={styles.details}>
+                            <Text style={styles.title}>
+                                {book.volumeInfo.title}
+                            </Text>
+                            {book.volumeInfo.authors && (
+                                <Text style={styles.description}>
+                                    {book.volumeInfo.authors.join(", ")}
+                                </Text>
+                            )}
+                            <Text style={styles.date}>
+                                Published: {book.volumeInfo.publishedDate}
+                            </Text>
+                        </View>
+                    </View>
+                ))}
+            </ScrollView>
         </View>
     );
 };
@@ -27,6 +91,37 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#F6F8FF",
         padding: 20,
+    },
+    searchContainer: {
+        flexDirection: "row",
+        marginBottom: 20,
+        alignItems: "center", // Align items vertically
+    },
+    input: {
+        flex: 1, // Take up remaining space
+        height: 40,
+        marginVertical: 10,
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 20,
+        paddingHorizontal: 10,
+    },
+    searchButton: {
+        width: 60, // Adjust width as needed
+        height: 40,
+        backgroundColor: "#889CB6",
+        borderRadius: 20,
+        justifyContent: "center",
+        alignItems: "center",
+        marginLeft: 10, // Add margin between input and button
+    },
+    buttonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    scrollView: {
+        height: "60%", // Set a fixed height for ScrollView
     },
     card: {
         flexDirection: "row",
@@ -68,4 +163,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default BookList;
+export default Recommendation;
