@@ -101,6 +101,7 @@ const BookList = () => {
             >
                 <Text style={styles.buttonText}>Add Book</Text>
             </TouchableOpacity>
+
             {/* <TouchableOpacity
                 style={styles.addButton}
                 onPress={clearBooksDatabase}

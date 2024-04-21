@@ -82,4 +82,18 @@ const getAllBooks = (callback) => {
         );
     });
 };
-export { setupDatabase, insertBook, getAllBooks };
+const clearBooksDatabase = () => {
+    db.transaction(
+        (tx) => {
+            // Execute the SQL query to delete all records from the books1 table
+            tx.executeSql("DELETE FROM books1", [], (_, result) => {
+                console.log("Books database cleared.");
+            });
+        },
+        (error) => {
+            console.error("Error clearing books database:", error);
+        }
+    );
+};
+
+export { setupDatabase, insertBook, getAllBooks, clearBooksDatabase };

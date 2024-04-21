@@ -68,7 +68,9 @@ const Recommendation = () => {
                     <View style={styles.card} key={index}>
                         <Image
                             source={{
-                                uri: book.volumeInfo.imageLinks.thumbnail,
+                                uri:
+                                    book.volumeInfo.imageLinks?.thumbnail ||
+                                    "https://via.placeholder.com/150", // Use a placeholder image if thumbnail is not available
                             }}
                             style={styles.image}
                         />
