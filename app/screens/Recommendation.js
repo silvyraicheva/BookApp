@@ -109,11 +109,12 @@ const styles = StyleSheet.create({
     searchButton: {
         width: 60, // Adjust width as needed
         height: 40,
-        backgroundColor: "#889CB6",
-        borderRadius: 20,
+
         justifyContent: "center",
         alignItems: "center",
         marginLeft: 10, // Add margin between input and button
+        backgroundColor: "#55BCF6",
+        borderRadius: 20,
     },
     buttonText: {
         color: "#fff",
