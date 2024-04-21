@@ -36,45 +36,53 @@ const BookList = () => {
         getAllBooks(setBooks);
     };
 
-    const addBook = () => {
-        // Perform validation and gather book information
-        insertBook(title, author, startDate, endDate, image);
-        fetchBooks(); // Update books list
-        setModalVisible(false); // Close modal
-        // Clear input fields
-        setTitle("");
-        setAuthor("");
-        setStartDate("");
-        setEndDate("");
+    const addBook = async () => {
+        try {
+            // Perform validation and gather book information
+            await insertBook(title, author, startDate, endDate, image);
+            // Update books list
+            fetchBooks();
+            // Close modal
+            setModalVisible(false);
+            // Clear input fields
+            setTitle("");
+            setAuthor("");
+            setStartDate("");
+            setEndDate("");
+            // setImage(null); // Reset the image state
+        } catch (error) {
+            console.error("Error adding book:", error);
+        }
     };
 
-    const takePhoto = async () => {
+    const pickImage = async () => {
         try {
-            await ImagePicker.requestCameraPermissionsAsync();
-            let result = await ImagePicker.launchCameraAsync({
-                cameraType: ImagePicker.CameraType.back,
+            let result = await ImagePicker.launchImageLibraryAsync({
                 allowsEditing: true,
                 aspect: [1, 1],
                 quality: 1,
             });
             if (!result.canceled) {
-                await saveImage(result.assets[0].uri);
-                // const fileName = `book_${Date.now()}.jpg`; // Generate a unique filename
-                // const newPath = `${FileSystem.documentDirectory}${fileName}`;
-                // await FileSystem.moveAsync({
-                //     from: result.assets[0].uri,
-                //     to: newPath,
-                // });
-                // await saveImage(newPath);
+                saveImage(result.assets[0].uri); // Call saveImage with the URI of the selected image
+                // No need to insert the book here
             }
         } catch (error) {
             alert("Error uploading image");
         }
     };
 
-    const saveImage = async (image) => {
+    const takePhoto = async () => {
         try {
-            setImage(image);
+            await ImagePicker.requestCameraPermissionsAsync();
+            pickImage();
+        } catch (error) {
+            alert("Error uploading image");
+        }
+    };
+
+    const saveImage = async (imageUri) => {
+        try {
+            setImage(imageUri);
         } catch (error) {
             throw error;
         }
@@ -164,11 +172,16 @@ const BookList = () => {
             <ScrollView style={styles.scrollView}>
                 {books.map((book) => (
                     <View key={book.id} style={styles.bookCard}>
-                        <Image
-                            // source={require("../assets/placeholder-book.png")}
-                            source={image ? { uri: image } : placeholder}
-                            style={styles.bookImage}
-                        />
+                        <View style={styles.imageContainer}>
+                            <Image
+                                source={
+                                    book.image
+                                        ? { uri: book.image }
+                                        : placeholder
+                                }
+                                style={styles.bookImage}
+                            />
+                        </View>
                         <View style={styles.bookDetails}>
                             <Text style={styles.bookTitle}>{book.title}</Text>
                             <Text style={styles.bookDescription}>
