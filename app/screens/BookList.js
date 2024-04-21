@@ -10,7 +10,7 @@ import {
     ScrollView,
     TouchableOpacity,
 } from "react-native";
-import { insertBook, getAllBooks } from "../../database";
+import { insertBook, getAllBooks, clearBooksDatabase } from "../../database";
 import * as ImagePicker from "expo-image-picker";
 
 import placeholder from "./../assets/placeholder-book.png";
