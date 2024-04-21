@@ -8,6 +8,7 @@ import {
     Button,
     TouchableOpacity,
     ScrollView,
+    Linking,
 } from "react-native";
 import axios from "axios";
 import { Google_Books_URL, GET_BOOKS_name, KEY_HEADER } from "./APIConfig";
@@ -17,8 +18,11 @@ const Recommendation = () => {
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
-        fetchBooks();
-    }, []);
+        // Fetch books only if the search query is not empty
+        if (searchQuery.trim() !== "") {
+            fetchBooks();
+        }
+    }, [searchQuery]); // Add searchQuery as a dependency
 
     const fetchBooks = async () => {
         try {
@@ -40,7 +44,9 @@ const Recommendation = () => {
             fetchBooks();
         }
     };
-
+    const openBookLink = (link) => {
+        Linking.openURL(link);
+    };
     return (
         <View style={styles.container}>
             <View style={styles.searchContainer}>
@@ -78,6 +84,17 @@ const Recommendation = () => {
                             <Text style={styles.date}>
                                 Published: {book.volumeInfo.publishedDate}
                             </Text>
+                            <TouchableOpacity
+                                key={index}
+                                style={styles.moreInfoButton} // Apply the custom style here
+                                onPress={() =>
+                                    openBookLink(book.volumeInfo.infoLink)
+                                }
+                            >
+                                <Text style={styles.moreInfoButtonText}>
+                                    Read book
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 ))}
@@ -161,6 +178,21 @@ const styles = StyleSheet.create({
     date: {
         fontSize: 14,
         color: "#889CB6",
+    },
+    moreInfoButton: {
+        backgroundColor: "#28a745",
+        borderRadius: 10,
+        paddingVertical: 6, // Reduce the vertical padding to make the button smaller
+        paddingHorizontal: 10, // Adjust the horizontal padding if needed
+        marginTop: 10,
+        alignItems: "center",
+        maxWidth: 120, // Set a maximum width for the button
+    },
+
+    moreInfoButtonText: {
+        color: "#fff",
+        fontSize: 14, // Decrease the font size
+        fontWeight: "bold",
     },
 });
 
